@@ -1,9 +1,11 @@
 import re
 
 from clientes.serializers import *
+from validate_docbr import CPF
     
-def validate_cpf(cpf):
-    return len(cpf) == 11
+def validate_cpf(ncpf):
+    cpf = CPF()
+    return cpf.validate(ncpf)
         
 def validate_nome(nome):
     return nome.isalpha()
