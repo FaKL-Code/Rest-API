@@ -1,29 +1,19 @@
-from xml.dom import ValidationErr
 from rest_framework import serializers
 from clientes.models import Cliente
+from clientes.validators import validate_celular, validate_cpf, validate_nome, validate_rg
 
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
         fields = '__all__'
     
-    def validate_cpf(self, cpf):
-        if len(cpf) != 11:
-            raise serializers.ValidationError("CPF invalido")
-        return cpf
-    
-    def validate_nome(self, nome):
-        if not nome.isalpha():
-            raise serializers.ValidationError("Nome não aceita caracteres numéricos")
-        return nome
-    
-    def validate_rg(self, rg):
-        if len(rg) != 9:
-            raise serializers.ValidationError("RG invalido")
-        return rg
-    
-    def validate_celular(self, celular):
-        if len(celular) < 11:
-            raise serializers.ValidationError("Celular invalido")
-        return celular
-    
+    def validate(self, data):
+        if not validate_cpf(data['cpf']):
+            raise serializers.ValidationError({'cpf':"CPF invalido"})
+        if not validate_nome(data['nome']):
+            raise serializers.ValidationError({'nome':"Nome não pode ter número"})
+        if not validate_rg(data['rg']):
+            raise serializers.ValidationError({'rg':"RG invalido"})
+        if not validate_celular(data['celular']):
+            raise serializers.ValidationError({'celular':"Celular invalido"})
+        return data
